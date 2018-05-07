@@ -3,7 +3,7 @@
 # 问题3：不使用headers也可以完成下载，难道不是Ajax加载吗？或者只是不需要审核headers中的信息？|
 # 问题4：num参数的意义，以及如何得到，总不能老从浏览器上看到吧
 # 其他记录
-# python可以合成gif图，这个挺敢兴趣的
+# python可以合成gif图，这个挺感兴趣的
 # Docstring的正确格式是什么？如何使用？
 
 import requests
