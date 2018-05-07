@@ -33,7 +33,7 @@ def open_url(start, num):
 
 
 # 这个函数是创建一个list好呢？还是直接用yield好呢？
-# #爬虫速度变得特别慢，是否是因为yield呢？改进效率问题！
+# 爬虫速度变得特别慢，是否是因为yield呢？改进效率问题！
 def get_img(response_json):
     for item in response_json.get('data').get('object_list'):
         link = item['photo']['path']
