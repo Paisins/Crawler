@@ -22,7 +22,7 @@ def geturlimg(url, path):
                 urllib.request.urlretrieve(img, filename)
                 i += 1
             except urllib.error.URLError as e:
-                print('照片%d下载失败'%i + str(e))
+                print('照片%d下载失败:'%i + str(e))
 
 
 def extension(img):
@@ -30,6 +30,8 @@ def extension(img):
     Type = ['.jpg', '.png', '.gif', '.jpeg']
     if ext in Type:
         return ext
+    else:
+        return None
 
 
 if __name__ == "__main__":
