@@ -39,6 +39,7 @@ def download(link, file_name):
 
 
 if __name__ == '__main__':
+    #  此处应该修改
     url = 'https://www.duitang.com/search/?kw=%E6%96%B0%E5%9E%A3%E7%BB%93%E8%A1%A3&type=feed'
     html = open_url(url)
     if html:
