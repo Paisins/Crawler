@@ -1,3 +1,4 @@
+# 该程序只能爬去单页，不能爬去异步加载之后的，可改进
 #!/usr/bin/python
 # -*- coding:utf8 -*-
 import urllib.request
