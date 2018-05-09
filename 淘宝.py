@@ -1,7 +1,7 @@
 # 根据崔庆才的博客写的
 # 思考1：我以为每次打开URL却又不关闭，会有太多界面的问题，但是把它放在函数里面之后，因为局部变量的缘故吧，就不会有问题。
 # 思考2：我的CSS基础太差了，原本以为够用了，现在觉得还是太嫩了，要多看
-# 改进1：比如搜索MacBook就不行，页面稍微一改变，就不会出错
+# 改进1：比如搜索MacBook就不行，页面稍微一改变，就会出错
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
@@ -16,7 +16,6 @@ wait = WebDriverWait(browser, 10)
 
 
 def to_page(page):
-
     base_url = 'https://s.taobao.com/search?q='
     url = base_url + quote(keyword)
     browser.get(url)
@@ -62,7 +61,8 @@ def save_info(dict):
 
 
 if __name__ == '__main__':
-    for i in range(4):
+    Page = 4
+    for i in range(Page):
         i += 1
         to_page(i)
     print('程序已结束，共搜索了%d页' % i)
