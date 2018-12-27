@@ -8,6 +8,7 @@
 # python可以合成gif图，这个挺感兴趣的
 # Docstring的正确格式是什么？如何使用？
 import os
+import pickle
 import requests
 from urllib.parse import urlencode
 
@@ -69,20 +70,32 @@ def run(save_path, page):
     base_url = 'https://www.duitang.com/napi/blog/list/by_search/?kw=%E6%96%B0%E5%9E%A3%E7%BB%93%E8%A1%A3&type=feed'
     if not os.path.exists(save_path):
         os.makedirs(save_path)
+    if os.path.exists(save_path＋'records.pk')：
+        old_links = pickle.loads(save_path＋'records.pk')
+    else:
+        old_links = None
+        os.makedirs(save_path＋'records.pk')
     start = 24
     # num参数需要人为获取，因为我不知道怎么获取
     num = 1525482336186
     t = 1
+    links = []
     for i in range(page):
         start += 24*i
         # num += 1
         response_json = (open_url(base_url, start))
         if response_json:
             for link in get_img(response_json):
+                if old_links and link in old_links:
+                    continue
+                else:
+                    links.append(link)
                 (link, extension) = link_extension(link)
                 img_name = str(t) + extension
                 if save_img(link, save_path + img_name, t):
                     t += 1
+    data = pickle.dumps(links)
+    # 接下来写入
     print('共下载了%d张图片' % (t-1))
     
     
