@@ -7,12 +7,12 @@
 # 其他记录
 # python可以合成gif图，这个挺感兴趣的
 # Docstring的正确格式是什么？如何使用？
-
+import os
 import requests
 from urllib.parse import urlencode
 
 
-def open_url(start, num=0):
+def open_url(base_url, start, num=0):
     params = {'include_fields': 'top_comments%2Cis_root%2Csource_link%2Citem%2Cbuyable%2Croot_id%2Cstatus%2Clike_count%2Csender%2Calbum',
               '_type': ''}
     params['start'] = str(start)
@@ -30,7 +30,7 @@ def open_url(start, num=0):
         else:
             return None
     except requests.RequestException as e:
-        print(e)
+        print('打开网址时出现错误！')
         return None
 
 
@@ -53,32 +53,40 @@ def link_extension(link):
         return (link, b)
 
 
-def save_img(link, img_name):
+def save_img(link, file_name, t):
     try:
         response = requests.get(link)
-        path = 'D:\\My Python\\爬虫\\爬虫数据\\新垣结衣_堆糖\\'
-        file_name = path + img_name
         with open(file_name, 'wb') as f:
             f.write(response.content)
-    except requests.RequestException as e:
-        print(e)
-    except IOError as e:
-        print(e)
+        print('下载第%d张图片成功！' % t)
+        return True
+    except Exception as e:
+        print('下载第%d张图片失败！' % t)
+        return False
 
 
-base_url = 'https://www.duitang.com/napi/blog/list/by_search/?kw=%E6%96%B0%E5%9E%A3%E7%BB%93%E8%A1%A3&type=feed'
-start = 24
-# num参数需要人为获取，因为我不知道怎么获取
-num = 1525482336186
-t = 1
-for i in range(2):
-    start += 24*i
-    # num += 1
-    response_json = (open_url(start))
-    if response_json:
-        for link in get_img(response_json):
-            (link, extension) = link_extension(link)
-            img_name = str(t) + extension
-            save_img(link, img_name)
-            t += 1
-print('共下载了%d张图片' % (t-1))
+def run(save_path, page):
+    base_url = 'https://www.duitang.com/napi/blog/list/by_search/?kw=%E6%96%B0%E5%9E%A3%E7%BB%93%E8%A1%A3&type=feed'
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    start = 24
+    # num参数需要人为获取，因为我不知道怎么获取
+    num = 1525482336186
+    t = 1
+    for i in range(page):
+        start += 24*i
+        # num += 1
+        response_json = (open_url(base_url, start))
+        if response_json:
+            for link in get_img(response_json):
+                (link, extension) = link_extension(link)
+                img_name = str(t) + extension
+                if save_img(link, save_path + img_name, t):
+                    t += 1
+    print('共下载了%d张图片' % (t-1))
+    
+    
+if __name__ == '__main__':
+    # run函数一般需要两个参数，第一个是保存路径，第二个是下载图片轮数，每轮下载24张
+    # 文件路径请以'/'作为文件名间隔符，如'folder1/folder2/'
+    run('', 1)
