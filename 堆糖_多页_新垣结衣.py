@@ -2,6 +2,8 @@
 # 问题2：gif还是不能正确下载，虽然没有报错，但是下载的gif文件不能动态演示 | 已解决
 # 问题3：不使用headers也可以完成下载，难道不是Ajax加载吗？或者只是不需要审核headers中的信息？|
 # 问题4：num参数的意义，以及如何得到，总不能老从浏览器上看到吧
+# 这代码居然还能用！其实可以不用加num，照样可以下载图片，但是第一还是很好奇num的作用，另外似乎每次下载的图片都不相同，这种随机有没有办法控制，不然我就要创建一个txt文件来存储
+# 已下载的图片链接，避免重复下载。
 # 其他记录
 # python可以合成gif图，这个挺感兴趣的
 # Docstring的正确格式是什么？如何使用？
@@ -10,11 +12,11 @@ import requests
 from urllib.parse import urlencode
 
 
-def open_url(start, num):
+def open_url(start, num=0):
     params = {'include_fields': 'top_comments%2Cis_root%2Csource_link%2Citem%2Cbuyable%2Croot_id%2Cstatus%2Clike_count%2Csender%2Calbum',
               '_type': ''}
     params['start'] = str(start)
-    params['_'] = str(num)
+    #　params['_'] = str(num)
     url = base_url + urlencode(params)
     # 刚开始忘记使用headers，结果一样可以得到数据，难道堆糖的不是异步加载吗？不然怎么可能呢？
     headers = {'Host': 'www.duitang.com',
@@ -71,8 +73,8 @@ num = 1525482336186
 t = 1
 for i in range(2):
     start += 24*i
-    num += 1
-    response_json = (open_url(start, num))
+    # num += 1
+    response_json = (open_url(start))
     if response_json:
         for link in get_img(response_json):
             (link, extension) = link_extension(link)
