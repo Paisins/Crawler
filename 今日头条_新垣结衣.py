@@ -5,6 +5,7 @@
 # 提示1：将keyword的参数换为其他的参数，都可以使用，相当于搜索时输入的关键词
 # 提示2：这里下载的图片都是jpg格式的，这是因为我得到了URL中没有文件后缀，在保存的时候看到默认格式为jpg，所以全部用这个格式，如果搜索到其他格式的图片
 #       文件，保存时可能会出现问题
+# 提示3：仍然会有部分图片重复，但是已经筛选过图片的下载链接了，尽管链接不重复，可是下载的图片仍是同一张，这个暂时没办法处理
 import os
 import requests
 from urllib.parse import urlencode
@@ -53,7 +54,7 @@ def save_image(title, links, save_path):
         os.makedirs(path)
     # 记录每个文件夹下载的图片数目
     number = 0
-    for img in links:
+    for img in set(links):
         try:
             response = requests.get('http:' + img)
             if response:
@@ -67,11 +68,11 @@ def save_image(title, links, save_path):
     print('文件夹 %s 已下载%d张图片' % (title, number))
 
 
-if __name__ == '__main__':
+    
+def run(save_path, page):
     base_url = 'https://www.toutiao.com/search_content/?'
-    save_path = ''
-    offset = 0
-    for i in range(2):
+    offset=0
+    for i in range(page):
         offset += i * 20
         page_json = get_page(base_url, offset)
         if page_json[0]:
@@ -79,3 +80,9 @@ if __name__ == '__main__':
                 save_image(title, links, save_path)
         else:
             print(page_json[1])
+            
+            
+if __name__ == '__main__':
+    # run函数一般需要两个参数，第一个是保存路径，第二个是下载图片轮数，每轮下载20条头条数，注意这与图片数量无关，每个头条中一般会包含不定的多张图片
+    # 文件路径请以'/'作为文件名间隔符，如'folder1/folder2/'
+    run('', 1)
