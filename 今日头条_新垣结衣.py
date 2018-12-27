@@ -5,13 +5,13 @@
 # 提示1：将keyword的参数换为其他的参数，都可以使用，相当于搜索时输入的关键词
 # 提示2：这里下载的图片都是jpg格式的，这是因为我得到了URL中没有文件后缀，在保存的时候看到默认格式为jpg，所以全部用这个格式，如果搜索到其他格式的图片
 #       文件，保存时可能会出现问题
+import os
 import requests
 from urllib.parse import urlencode
-import os
 
 
-def get_page(offset):
-    params = {'offset': offset,
+def get_page(base_url, offset):
+    params = {'offset': str(offset),
               'format': 'json',
               'keyword': '新垣结衣',
               'autoload': 'true',
@@ -22,12 +22,11 @@ def get_page(offset):
     try:
         response = requests.get(url)
         if response.status_code == 200:
-            return response.json()
+            return True, response.json()
         else:
-            return None
+            return False, 'response.status_code： %d' % (response.status_code)
     except requests.ConnectionError as e:
-        print(e)
-        return None
+        return False, e
 
 
 def parse_page(page_json):
@@ -47,33 +46,36 @@ def parse_page(page_json):
         yield [title, links]
 
 
-def save_image(info):
+def save_image(title, links, save_path):
     # 此处为文件保存的位置，可以自定义
-    path = 'D:\\My Python\\爬虫\\爬虫数据\\新垣结衣_今日头条\\' + info[0]
+    path = save_path + title
     if not os.path.exists(path):
         os.makedirs(path)
     # 记录每个文件夹下载的图片数目
     number = 0
-    for item in info[1]:
+    for img in links:
         try:
-            response = requests.get('http:'+item)
+            response = requests.get('http:' + img)
             if response:
                 with open(path+'\\'+str(number)+'.jpg', 'wb') as f:
                     f.write(response.content)
                 number += 1
             else:
-                print('下载失败')
-        except requests.ConnectionError as e:
-            print(e)
-    print('文件夹《%s》已下载%d张图片' % (info[0], number-1))
+                print('%s下载失败' % img)
+        except Exception as e:
+            pass
+    print('文件夹 %s 已下载%d张图片' % (title, number))
 
 
 if __name__ == '__main__':
     base_url = 'https://www.toutiao.com/search_content/?'
+    save_path = ''
     offset = 0
     for i in range(2):
         offset += i * 20
-        page_json = get_page(str(offset))
-        if page_json:
-            for info in parse_page(page_json):
-                save_image(info)
+        page_json = get_page(base_url, offset)
+        if page_json[0]:
+            for title,links in parse_page(page_json[1]):
+                save_image(title, links, save_path)
+        else:
+            print(page_json[1])
