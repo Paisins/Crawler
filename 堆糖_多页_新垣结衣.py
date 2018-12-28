@@ -59,6 +59,7 @@ def save_img(link, file_name, t):
         response = requests.get(link)
         with open(file_name, 'wb') as f:
             f.write(response.content)
+        print(link)
         print('下载第%d张图片成功！' % t)
         return True
     except Exception as e:
@@ -70,11 +71,12 @@ def run(save_path, page):
     base_url = 'https://www.duitang.com/napi/blog/list/by_search/?kw=%E6%96%B0%E5%9E%A3%E7%BB%93%E8%A1%A3&type=feed'
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-    if os.path.exists(save_path＋'records.pk')：
-        old_links = pickle.loads(save_path＋'records.pk')
+    records_file = save_path+"/records.pk"
+    if os.path.exists(records_file):
+        with open(records_file, 'rb') as f:
+            old_links = pickle.load(records_file)
     else:
-        old_links = None
-        os.makedirs(save_path＋'records.pk')
+        old_links = []
     start = 24
     # num参数需要人为获取，因为我不知道怎么获取
     num = 1525482336186
@@ -86,20 +88,20 @@ def run(save_path, page):
         response_json = (open_url(base_url, start))
         if response_json:
             for link in get_img(response_json):
-                if old_links and link in old_links:
+                if link in old_links:
                     continue
                 else:
-                    links.append(link)
+                    old_links.append(link)
                 (link, extension) = link_extension(link)
                 img_name = str(t) + extension
                 if save_img(link, save_path + img_name, t):
                     t += 1
-    data = pickle.dumps(links)
-    # 接下来写入
+    with open(records_file, 'wb') as f:
+        pickle.dump(old_links, f)
     print('共下载了%d张图片' % (t-1))
     
     
 if __name__ == '__main__':
     # run函数一般需要两个参数，第一个是保存路径，第二个是下载图片轮数，每轮下载24张
     # 文件路径请以'/'作为文件名间隔符，如'folder1/folder2/'
-    run('', 1)
+    run('/home/jcj/Pictures/新垣结衣/', 1)
